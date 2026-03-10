@@ -119,22 +119,19 @@ We recommend using `quickstart.sh` for LLM API credential setup and the credenti
 The `hive` CLI is the primary interface for running agents:
 
 ```bash
-# Browse and run agents interactively (Recommended)
-hive tui
+# Launch the browser dashboard (Recommended)
+hive open
 
 # Run a specific agent
 hive run exports/my_agent --input '{"task": "Your input here"}'
-
-# Run with TUI dashboard
-hive run exports/my_agent --tui
 ```
 
 ### CLI Command Reference
 
 | Command                | Description                                                             |
 | ---------------------- | ----------------------------------------------------------------------- |
-| `hive tui`             | Browse agents and launch TUI dashboard                                  |
-| `hive run <path>`      | Execute an agent (`--tui`, `--model`, `--mock`, `--quiet`, `--verbose`) |
+| `hive open`            | Launch the browser-based dashboard                                    |
+| `hive run <path>`      | Execute an agent (`--model`, `--mock`, `--quiet`, `--verbose`) |
 | `hive shell [path]`    | Interactive REPL (`--multi`, `--no-approve`)                            |
 | `hive info <path>`     | Show agent details                                                      |
 | `hive validate <path>` | Validate agent structure                                                |
@@ -473,7 +470,7 @@ claude> test workflow
 
 ```bash
 # Interactive dashboard
-hive tui
+hive open
 
 # Or run directly
 hive run exports/your_agent_name --input '{"task": "..."}'
