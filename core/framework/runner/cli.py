@@ -7,6 +7,15 @@ import sys
 from pathlib import Path
 
 
+def _print_tui_deprecation_notice() -> None:
+    """Warn users that the terminal UI is deprecated."""
+    print(
+        "Warning: `hive tui` / `--tui` is deprecated and no longer maintained. "
+        "Use `hive open` for the browser interface.",
+        file=sys.stderr,
+    )
+
+
 def register_commands(subparsers: argparse._SubParsersAction) -> None:
     """Register runner commands with the main CLI."""
 
@@ -54,7 +63,7 @@ def register_commands(subparsers: argparse._SubParsersAction) -> None:
     run_parser.add_argument(
         "--tui",
         action="store_true",
-        help="Launch interactive terminal dashboard",
+        help="Launch interactive terminal dashboard (deprecated; use `hive open`)",
     )
     run_parser.add_argument(
         "--model",
@@ -564,6 +573,8 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     # Run the agent (with TUI or standard)
     if getattr(args, "tui", False):
+        _print_tui_deprecation_notice()
+
         from framework.tui.app import AdenTUI
 
         async def run_with_tui():
@@ -1399,10 +1410,12 @@ def _launch_agent_tui(
 
 
 def cmd_tui(args: argparse.Namespace) -> int:
-    """Launch the interactive TUI dashboard with in-app agent picker."""
+    """Launch the interactive TUI dashboard with in-app agent picker (deprecated)."""
     import logging
 
     logging.basicConfig(level=logging.WARNING, format="%(message)s")
+
+    _print_tui_deprecation_notice()
 
     from framework.tui.app import AdenTUI
 
