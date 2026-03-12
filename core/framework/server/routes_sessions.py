@@ -31,6 +31,7 @@ from pathlib import Path
 from aiohttp import web
 
 from framework.server.app import (
+    manager_key,
     resolve_session,
     safe_path_segment,
     sessions_dir,
@@ -42,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_manager(request: web.Request) -> SessionManager:
-    return request.app["manager"]
+    return request.app[manager_key]
 
 
 def _session_to_live_dict(session) -> dict:
