@@ -10,6 +10,10 @@ from framework.server.session_manager import Session, SessionManager
 
 logger = logging.getLogger(__name__)
 
+# Typed app-state keys (eliminates NotAppKeyWarning)
+credential_store_key: web.AppKey["CredentialStore"] = web.AppKey("credential_store")
+manager_key: web.AppKey[SessionManager] = web.AppKey("manager", t=SessionManager)
+
 
 # Anchor to the repository root so allowed roots are independent of CWD.
 # app.py lives at core/framework/server/app.py, so four .parent calls
@@ -74,7 +78,7 @@ def resolve_session(request: web.Request):
 
     Returns (session, None) on success or (None, error_response) on failure.
     """
-    manager: SessionManager = request.app["manager"]
+    manager: SessionManager = request.app[manager_key]
     sid = request.match_info["session_id"]
     session = manager.get_session(sid)
     if not session:
@@ -148,13 +152,13 @@ async def error_middleware(request: web.Request, handler):
 
 async def _on_shutdown(app: web.Application) -> None:
     """Gracefully unload all agents on server shutdown."""
-    manager: SessionManager = app["manager"]
+    manager: SessionManager = app[manager_key]
     await manager.shutdown_all()
 
 
 async def handle_health(request: web.Request) -> web.Response:
     """GET /api/health — simple health check."""
-    manager: SessionManager = request.app["manager"]
+    manager: SessionManager = request.app[manager_key]
     sessions = manager.list_sessions()
     return web.json_response(
         {
@@ -202,8 +206,8 @@ def create_app(model: str | None = None) -> web.Application:
         logger.debug("Encrypted credential store unavailable, using in-memory fallback")
         credential_store = CredentialStore.for_testing({})
 
-    app["credential_store"] = credential_store
-    app["manager"] = SessionManager(model=model, credential_store=credential_store)
+    app[credential_store_key] = credential_store
+    app[manager_key] = SessionManager(model=model, credential_store=credential_store)
 
     # Register shutdown hook
     app.on_shutdown.append(_on_shutdown)
